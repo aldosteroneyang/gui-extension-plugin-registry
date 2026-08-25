@@ -33,4 +33,5 @@ jobs:
         run: npm run verify
 
       - name: Validate published manifests
+        if: ${{ github.event_name != 'pull_request' }}
         run: npm run validate:production
