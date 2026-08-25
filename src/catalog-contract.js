@@ -4,6 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const pluginContract = require('./plugin-contract');
+const blockContract = require('./declarative-block-contract');
 
 const CATALOG_SCHEMA_VERSION = 1;
 const PUBLIC_MANIFEST_BASE = 'https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/';
@@ -17,7 +18,7 @@ const ENTRY_KEYS = new Set([
   'manifestSha256',
   'delivery'
 ]);
-const DELIVERY_KEYS = new Set(['hostPluginId', 'resourceUrl']);
+const DELIVERY_KEYS = new Set(['hostPluginId', 'resourceUrl', 'resourceSha256']);
 const PLUGIN_ID_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 const SEMVER_PATTERN = /^\d+\.\d+\.\d+$/;
 const SHA256_PATTERN = /^[a-f0-9]{64}$/;
@@ -55,6 +56,27 @@ function validateHttpsUrl(value, label) {
   return parsed.toString();
 }
 
+function readJsonFile(rootDirectory, relativePath, label) {
+  const absoluteRoot = path.resolve(rootDirectory);
+  const absolutePath = path.resolve(absoluteRoot, relativePath);
+  if (!absolutePath.startsWith(`${absoluteRoot}${path.sep}`)) {
+    throw new Error(`${label} escapes repository: ${relativePath}`);
+  }
+  let raw;
+  try {
+    raw = fs.readFileSync(absolutePath);
+  } catch (_error) {
+    throw new Error(`cannot read ${label}: ${relativePath}`);
+  }
+  let value;
+  try {
+    value = JSON.parse(raw.toString('utf8'));
+  } catch (_error) {
+    throw new Error(`${label} is not valid JSON: ${relativePath}`);
+  }
+  return { value, raw };
+}
+
 function readManifest(rootDirectory, manifestPath) {
   const expectedPrefix = 'plugins/';
   if (typeof manifestPath !== 'string'
@@ -62,24 +84,8 @@ function readManifest(rootDirectory, manifestPath) {
     || !/^plugins\/[a-z][a-z0-9]*(?:-[a-z0-9]+)*\/plugin-manifest\.json$/.test(manifestPath)) {
     throw new Error(`invalid catalog manifestPath: ${manifestPath}`);
   }
-  const absoluteRoot = path.resolve(rootDirectory);
-  const absolutePath = path.resolve(absoluteRoot, manifestPath);
-  if (!absolutePath.startsWith(`${absoluteRoot}${path.sep}`)) {
-    throw new Error(`catalog manifestPath escapes repository: ${manifestPath}`);
-  }
-  let raw;
-  try {
-    raw = fs.readFileSync(absolutePath);
-  } catch (_error) {
-    throw new Error(`cannot read catalog manifest: ${manifestPath}`);
-  }
-  let manifest;
-  try {
-    manifest = JSON.parse(raw.toString('utf8'));
-  } catch (_error) {
-    throw new Error(`catalog manifest is not valid JSON: ${manifestPath}`);
-  }
-  return { manifest, raw };
+  const { value, raw } = readJsonFile(rootDirectory, manifestPath, 'catalog manifest');
+  return { manifest: value, raw };
 }
 
 function validateCatalog(catalog, options = {}) {
@@ -153,6 +159,28 @@ function validateCatalog(catalog, options = {}) {
       .flatMap(entrypoint => entrypoint.capabilities);
     if (entry.kind === 'remote-web' && !capabilities.includes('ui.remote-surface')) {
       throw new Error(`remote-web plugin requires ui.remote-surface: ${entry.id}`);
+    }
+    if (entry.kind === 'declarative') {
+      const resourcePath = `plugins/${entry.id}/blocks.json`;
+      if (resourceUrl !== `${PUBLIC_MANIFEST_BASE}${resourcePath}`) {
+        throw new Error(`declarative resource URL is not canonical: ${entry.id}`);
+      }
+      const { value: payload, raw: resourceRaw } = readJsonFile(
+        rootDirectory,
+        resourcePath,
+        'declarative resource'
+      );
+      const resourceDigest = crypto.createHash('sha256').update(resourceRaw).digest('hex');
+      if (!SHA256_PATTERN.test(entry.delivery.resourceSha256)
+        || entry.delivery.resourceSha256 !== resourceDigest) {
+        throw new Error(`declarative resource SHA-256 mismatch: ${entry.id}`);
+      }
+      const normalizedPayload = blockContract.assertPayload(payload);
+      if (normalizedPayload.pluginId !== entry.id || normalizedPayload.version !== entry.version) {
+        throw new Error(`declarative resource identity mismatch: ${entry.id}`);
+      }
+    } else if (entry.delivery.resourceSha256 !== undefined) {
+      throw new Error(`remote-web delivery must not declare resourceSha256: ${entry.id}`);
     }
     manifests.push(manifest);
     return {

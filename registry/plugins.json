@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "contractVersion": 1,
-  "registryVersion": "1.0.0",
+  "registryVersion": "1.1.0",
   "plugins": [
     {
       "id": "report-generators",
@@ -13,6 +13,19 @@
       "delivery": {
         "hostPluginId": "generator-host",
         "resourceUrl": "https://gui-report-extension.vercel.app/api/registry"
+      }
+    },
+    {
+      "id": "online-options-help",
+      "version": "1.0.0",
+      "kind": "declarative",
+      "manifestPath": "plugins/online-options-help/plugin-manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/plugins/online-options-help/plugin-manifest.json",
+      "manifestSha256": "e3343001cd5d732c32d49f9e5faca6911c0c917e6db86240b82c8acd4edb39e6",
+      "delivery": {
+        "hostPluginId": "declarative-block-host",
+        "resourceUrl": "https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/plugins/online-options-help/blocks.json",
+        "resourceSha256": "22145075cb35b85cc0f5383b69e166a56d2c672fd11490522c87df3ef62931b5"
       }
     }
   ]

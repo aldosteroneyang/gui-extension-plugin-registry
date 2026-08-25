@@ -9,6 +9,10 @@ const workflow = fs.readFileSync(
   path.resolve(__dirname, '..', '.github', 'workflows', 'plugin-contract.yml'),
   'utf8'
 );
+const governance = fs.readFileSync(
+  path.resolve(__dirname, '..', '.github', 'workflows', 'contract-governance.yml'),
+  'utf8'
+);
 
 test('reusable workflow requires one immutable workflow and validator revision', () => {
   assert.match(workflow, /WORKFLOW_REF: \$\{\{ job\.workflow_ref \}\}/);
@@ -19,4 +23,12 @@ test('reusable workflow requires one immutable workflow and validator revision',
   );
   assert.match(workflow, /"\$WORKFLOW_SHA" != "\$CONTRACT_REF"/);
   assert.doesNotMatch(workflow, /github\.workflow_ref/);
+});
+
+test('production URL parity runs only after main publication', () => {
+  assert.match(
+    governance,
+    /name: Validate published manifests\n\s+if: \$\{\{ github\.event_name != 'pull_request' \}\}/
+  );
+  assert.match(governance, /run: npm run validate:production/);
 });
