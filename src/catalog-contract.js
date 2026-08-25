@@ -4,6 +4,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const pluginContract = require('./plugin-contract');
+const activationContract = require('./plugin-activation-contract');
 const blockContract = require('./declarative-block-contract');
 
 const CATALOG_SCHEMA_VERSION = 1;
@@ -88,6 +89,16 @@ function readManifest(rootDirectory, manifestPath) {
   return { manifest: value, raw };
 }
 
+function declarativeResourceDefinition(hostPluginId) {
+  if (hostPluginId === 'declarative-block-host') {
+    return { fileName: 'blocks.json', assertPayload: blockContract.assertPayload };
+  }
+  if (hostPluginId === activationContract.ACTIVATION_HOST_PLUGIN_ID) {
+    return { fileName: 'activation.json', assertPayload: activationContract.assertPayload };
+  }
+  throw new Error(`unsupported declarative delivery host: ${hostPluginId}`);
+}
+
 function validateCatalog(catalog, options = {}) {
   const rootDirectory = options.rootDirectory || path.resolve(__dirname, '..');
   assertClosedSchema(catalog, TOP_LEVEL_KEYS, 'catalog');
@@ -106,6 +117,7 @@ function validateCatalog(catalog, options = {}) {
 
   const seenIds = new Set();
   const seenManifestUrls = new Set();
+  const seenActivationTargets = new Set();
   const manifests = [];
   const plugins = catalog.plugins.map(entry => {
     assertClosedSchema(entry, ENTRY_KEYS, 'catalog plugin');
@@ -161,7 +173,8 @@ function validateCatalog(catalog, options = {}) {
       throw new Error(`remote-web plugin requires ui.remote-surface: ${entry.id}`);
     }
     if (entry.kind === 'declarative') {
-      const resourcePath = `plugins/${entry.id}/blocks.json`;
+      const definition = declarativeResourceDefinition(entry.delivery.hostPluginId);
+      const resourcePath = `plugins/${entry.id}/${definition.fileName}`;
       if (resourceUrl !== `${PUBLIC_MANIFEST_BASE}${resourcePath}`) {
         throw new Error(`declarative resource URL is not canonical: ${entry.id}`);
       }
@@ -175,9 +188,15 @@ function validateCatalog(catalog, options = {}) {
         || entry.delivery.resourceSha256 !== resourceDigest) {
         throw new Error(`declarative resource SHA-256 mismatch: ${entry.id}`);
       }
-      const normalizedPayload = blockContract.assertPayload(payload);
+      const normalizedPayload = definition.assertPayload(payload);
       if (normalizedPayload.pluginId !== entry.id || normalizedPayload.version !== entry.version) {
         throw new Error(`declarative resource identity mismatch: ${entry.id}`);
+      }
+      if (entry.delivery.hostPluginId === activationContract.ACTIVATION_HOST_PLUGIN_ID) {
+        if (seenActivationTargets.has(normalizedPayload.targetPluginId)) {
+          throw new Error(`duplicate feature activation target: ${normalizedPayload.targetPluginId}`);
+        }
+        seenActivationTargets.add(normalizedPayload.targetPluginId);
       }
     } else if (entry.delivery.resourceSha256 !== undefined) {
       throw new Error(`remote-web delivery must not declare resourceSha256: ${entry.id}`);
@@ -207,6 +226,7 @@ function validateCatalog(catalog, options = {}) {
 module.exports = {
   CATALOG_SCHEMA_VERSION,
   PUBLIC_MANIFEST_BASE,
+  declarativeResourceDefinition,
   validateCatalog,
   validateHttpsUrl
 };

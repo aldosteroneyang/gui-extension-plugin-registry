@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "pluginId": "worklist-sort-online",
+  "version": "1.0.0",
+  "targetPluginId": "worklist-sort",
+  "enabled": true
+}
