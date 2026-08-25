@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "pluginId": "report-library-online",
+  "version": "1.0.0",
+  "targetPluginId": "report-library",
+  "enabled": true
+}

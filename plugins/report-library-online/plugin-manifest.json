@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "contractVersion": 1,
+  "id": "report-library-online",
+  "version": "1.0.0",
+  "kind": "declarative",
+  "entrypoints": {
+    "content": {
+      "capabilities": [
+        "webnm.context"
+      ],
+      "messageActions": [],
+      "alarmNames": [],
+      "lifecycle": [],
+      "provides": [],
+      "consumes": []
+    },
+    "options": {
+      "capabilities": [
+        "ui.options"
+      ],
+      "messageActions": [],
+      "alarmNames": [],
+      "lifecycle": [],
+      "provides": [],
+      "consumes": []
+    }
+  },
+  "storage": []
+}

@@ -24,6 +24,11 @@ allowlisted by the minimum Extension version, and a strict boolean `enabled`.
 Removing checks or inventing a target in this repository is not an onboarding
 path; Extension support must ship first.
 
+For a multi-context packaged engine, the Extension release must prove every
+affected Background, Content, and Options mount boundary before publication.
+Disabling an activation controller must not delete saved feature data unless a
+separate, explicit migration has been reviewed.
+
 ## Add a contract field or capability
 
 This is not an unreviewed JSON addition. Unknown fields remain rejected.

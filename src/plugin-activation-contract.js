@@ -8,6 +8,8 @@
   const ACTIVATION_SCHEMA_VERSION = 1;
   const ACTIVATION_HOST_PLUGIN_ID = 'feature-activation-host';
   const ACTIVATABLE_PLUGIN_DEFAULTS = Object.freeze({
+    'report-library': true,
+    'report-reminders': true,
     'worklist-sort': true
   });
   const PAYLOAD_KEYS = new Set([
