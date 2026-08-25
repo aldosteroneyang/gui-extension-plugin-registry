@@ -18,6 +18,12 @@ Required:
 An update at the same resource URL does not require an Extension release when
 the existing packaged host and contract already understand it.
 
+Feature activation is a separate declarative payload type. It must use
+`feature-activation-host`, canonical `activation.json`, a target already
+allowlisted by the minimum Extension version, and a strict boolean `enabled`.
+Removing checks or inventing a target in this repository is not an onboarding
+path; Extension support must ship first.
+
 ## Add a contract field or capability
 
 This is not an unreviewed JSON addition. Unknown fields remain rejected.

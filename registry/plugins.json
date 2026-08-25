@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "contractVersion": 1,
-  "registryVersion": "1.1.0",
+  "registryVersion": "1.2.0",
   "plugins": [
     {
       "id": "report-generators",
@@ -26,6 +26,19 @@
         "hostPluginId": "declarative-block-host",
         "resourceUrl": "https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/plugins/online-options-help/blocks.json",
         "resourceSha256": "22145075cb35b85cc0f5383b69e166a56d2c672fd11490522c87df3ef62931b5"
+      }
+    },
+    {
+      "id": "worklist-sort-online",
+      "version": "1.0.0",
+      "kind": "declarative",
+      "manifestPath": "plugins/worklist-sort-online/plugin-manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/plugins/worklist-sort-online/plugin-manifest.json",
+      "manifestSha256": "91f02602e173517d5de49305480abad370bb3505592fdcdb20831479479ce6e6",
+      "delivery": {
+        "hostPluginId": "feature-activation-host",
+        "resourceUrl": "https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/plugins/worklist-sort-online/activation.json",
+        "resourceSha256": "eba026855cb9d7c1a12766ecd396623898107bd9ec8a9ff5ddb5256f2f7b6b99"
       }
     }
   ]

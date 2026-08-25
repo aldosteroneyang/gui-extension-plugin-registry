@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "contractVersion": 1,
+  "id": "worklist-sort-online",
+  "version": "1.0.0",
+  "kind": "declarative",
+  "entrypoints": {
+    "content": {
+      "capabilities": [
+        "webnm.context",
+        "ui.webnm"
+      ],
+      "messageActions": [],
+      "alarmNames": [],
+      "lifecycle": [],
+      "provides": [],
+      "consumes": []
+    }
+  },
+  "storage": []
+}

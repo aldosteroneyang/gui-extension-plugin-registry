@@ -5,6 +5,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const contract = require('../src/plugin-contract');
+const activationContract = require('../src/plugin-activation-contract');
 const blockContract = require('../src/declarative-block-contract');
 const { validateCatalog } = require('../src/catalog-contract');
 
@@ -70,7 +71,14 @@ async function fetchRemoteManifest(entry, fetchImpl = fetch) {
       if (resourceDigest !== entry.delivery.resourceSha256) {
         throw new Error('remote resource SHA-256 mismatch');
       }
-      const payload = blockContract.assertPayload(JSON.parse(resourceRaw.toString('utf8')));
+      let payload;
+      if (entry.delivery.hostPluginId === 'declarative-block-host') {
+        payload = blockContract.assertPayload(JSON.parse(resourceRaw.toString('utf8')));
+      } else if (entry.delivery.hostPluginId === activationContract.ACTIVATION_HOST_PLUGIN_ID) {
+        payload = activationContract.assertPayload(JSON.parse(resourceRaw.toString('utf8')));
+      } else {
+        throw new Error(`unsupported declarative delivery host: ${entry.delivery.hostPluginId}`);
+      }
       if (payload.pluginId !== entry.id || payload.version !== entry.version) {
         throw new Error('remote declarative resource identity mismatch');
       }
