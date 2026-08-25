@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "contractVersion": 1,
+  "id": "report-generators",
+  "version": "1.0.0",
+  "kind": "remote-web",
+  "entrypoints": {
+    "content": {
+      "capabilities": [
+        "webnm.context",
+        "webnm.areas.read",
+        "webnm.areas.write",
+        "ui.remote-surface"
+      ],
+      "messageActions": [],
+      "alarmNames": [],
+      "lifecycle": [],
+      "provides": [],
+      "consumes": []
+    }
+  },
+  "storage": []
+}

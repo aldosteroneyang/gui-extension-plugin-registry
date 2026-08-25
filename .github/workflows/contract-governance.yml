@@ -1,0 +1,36 @@
+name: Contract Governance
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "31 1 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify plugin contract and production catalog
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out registry
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Run local governance gates
+        run: npm run verify
+
+      - name: Validate published manifests
+        run: npm run validate:production

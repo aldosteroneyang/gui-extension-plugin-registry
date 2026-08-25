@@ -1,0 +1,101 @@
+name: Plugin Contract Gate
+
+on:
+  workflow_call:
+    inputs:
+      manifest-path:
+        description: Path to plugin-manifest.json in the plugin repository
+        required: true
+        type: string
+      expected-plugin-id:
+        description: Stable plugin identity
+        required: true
+        type: string
+      expected-kind:
+        description: declarative or remote-web
+        required: true
+        type: string
+      contract-ref:
+        description: Full immutable contract commit used by workflow and validator
+        required: true
+        type: string
+      checkout-ref:
+        description: Optional plugin commit to validate
+        required: false
+        default: ""
+        type: string
+      node-version:
+        description: Node major compatible with the plugin repository
+        required: false
+        default: "22"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Test and validate plugin
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Verify immutable workflow and validator revision
+        env:
+          CONTRACT_REF: ${{ inputs.contract-ref }}
+          WORKFLOW_REF: ${{ job.workflow_ref }}
+          WORKFLOW_SHA: ${{ job.workflow_sha }}
+        run: |
+          if [[ ! "$CONTRACT_REF" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "contract-ref must be a full commit SHA"
+            exit 1
+          fi
+          if [[ "$WORKFLOW_REF" != "aldosteroneyang/gui-extension-plugin-registry/.github/workflows/plugin-contract.yml@$CONTRACT_REF" ]]; then
+            echo "workflow ref and contract-ref must be identical"
+            exit 1
+          fi
+          if [[ "$WORKFLOW_SHA" != "$CONTRACT_REF" ]]; then
+            echo "workflow SHA and contract-ref must be identical"
+            exit 1
+          fi
+
+      - name: Check out plugin
+        uses: actions/checkout@v6
+        with:
+          path: plugin
+          ref: ${{ inputs.checkout-ref || github.sha }}
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Install locked plugin dependencies
+        if: ${{ hashFiles('plugin/package-lock.json') != '' }}
+        working-directory: plugin
+        run: npm ci
+
+      - name: Run plugin tests
+        if: ${{ hashFiles('plugin/package.json') != '' }}
+        working-directory: plugin
+        run: npm test
+
+      - name: Check out public contract
+        uses: actions/checkout@v6
+        with:
+          repository: aldosteroneyang/gui-extension-plugin-registry
+          ref: ${{ inputs.contract-ref }}
+          path: plugin-contract
+          persist-credentials: false
+
+      - name: Validate plugin manifest
+        env:
+          EXPECTED_ID: ${{ inputs.expected-plugin-id }}
+          EXPECTED_KIND: ${{ inputs.expected-kind }}
+          MANIFEST_PATH: ${{ inputs.manifest-path }}
+        run: >-
+          node plugin-contract/scripts/validate-plugin-contract.js
+          --manifest "plugin/$MANIFEST_PATH"
+          --expected-id "$EXPECTED_ID"
+          --expected-kind "$EXPECTED_KIND"

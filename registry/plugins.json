@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "contractVersion": 1,
+  "registryVersion": "1.0.0",
+  "plugins": [
+    {
+      "id": "report-generators",
+      "version": "1.0.0",
+      "kind": "remote-web",
+      "manifestPath": "plugins/report-generators/plugin-manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/plugins/report-generators/plugin-manifest.json",
+      "manifestSha256": "d2280447f2c26dc4a97d3327c27faf286ce541f72d8f56dcdacfd3a2a9a47dad",
+      "delivery": {
+        "hostPluginId": "generator-host",
+        "resourceUrl": "https://gui-report-extension.vercel.app/api/registry"
+      }
+    }
+  ]
+}
