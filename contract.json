@@ -2,7 +2,7 @@
   "contractVersion": 1,
   "manifestSchemaVersion": 1,
   "catalogSchemaVersion": 1,
-  "registryVersion": "1.0.0",
+  "registryVersion": "1.1.0",
   "minimumExtensionVersion": "3.3.0",
   "changePolicy": "extension-first"
 }

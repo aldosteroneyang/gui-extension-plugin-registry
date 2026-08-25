@@ -5,6 +5,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 const contract = require('../src/plugin-contract');
+const blockContract = require('../src/declarative-block-contract');
 const { validateCatalog } = require('../src/catalog-contract');
 
 const REQUEST_TIMEOUT_MS = 15000;
@@ -51,6 +52,28 @@ async function fetchRemoteManifest(entry, fetchImpl = fetch) {
     }
     if (manifest.id !== entry.id || manifest.version !== entry.version || manifest.kind !== entry.kind) {
       throw new Error('remote manifest identity mismatch');
+    }
+    if (entry.kind === 'declarative') {
+      const resourceUrl = new URL(entry.delivery.resourceUrl);
+      resourceUrl.searchParams.set('_', String(Date.now()));
+      const resourceResponse = await fetchImpl(resourceUrl, {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': 'gui-extension-plugin-registry'
+        },
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      if (!resourceResponse.ok) throw new Error(`resource HTTP ${resourceResponse.status}`);
+      const resourceRaw = Buffer.from(await resourceResponse.arrayBuffer());
+      const resourceDigest = crypto.createHash('sha256').update(resourceRaw).digest('hex');
+      if (resourceDigest !== entry.delivery.resourceSha256) {
+        throw new Error('remote resource SHA-256 mismatch');
+      }
+      const payload = blockContract.assertPayload(JSON.parse(resourceRaw.toString('utf8')));
+      if (payload.pluginId !== entry.id || payload.version !== entry.version) {
+        throw new Error('remote declarative resource identity mismatch');
+      }
     }
     return manifest;
   } catch (error) {

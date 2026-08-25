@@ -7,7 +7,7 @@
     "node": ">=22 <25"
   },
   "scripts": {
-    "check": "node --check src/plugin-contract.js && node --check src/catalog-contract.js && node --check scripts/validate-plugin-contract.js && node --check scripts/validate-catalog.js && node --check scripts/check-public-boundary.js",
+    "check": "node --check src/plugin-contract.js && node --check src/declarative-block-contract.js && node --check src/catalog-contract.js && node --check scripts/validate-plugin-contract.js && node --check scripts/validate-catalog.js && node --check scripts/check-public-boundary.js",
     "test": "node --test tests/*.test.js",
     "validate:catalog": "node scripts/validate-catalog.js registry/plugins.json",
     "validate:production": "node scripts/validate-catalog.js registry/plugins.json --check-remote",

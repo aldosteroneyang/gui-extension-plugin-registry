@@ -11,9 +11,11 @@ const catalog = JSON.parse(fs.readFileSync(path.join(rootDirectory, 'registry/pl
 
 test('production catalog passes executable manifest and delivery checks', () => {
   const result = validateCatalog(catalog, { rootDirectory });
-  assert.equal(result.plugins.length, 1);
+  assert.equal(result.plugins.length, 2);
   assert.equal(result.plugins[0].id, 'report-generators');
   assert.equal(result.plugins[0].delivery.hostPluginId, 'generator-host');
+  assert.equal(result.plugins[1].id, 'online-options-help');
+  assert.equal(result.plugins[1].delivery.hostPluginId, 'declarative-block-host');
 });
 
 test('catalog rejects prose approval and packaged remote publication', () => {
@@ -35,5 +37,14 @@ test('catalog rejects a manifest digest that was not reviewed', () => {
   assert.throws(
     () => validateCatalog(modified, { rootDirectory }),
     /SHA-256 mismatch/
+  );
+});
+
+test('catalog rejects declarative resource drift and executable block fields', () => {
+  const modified = structuredClone(catalog);
+  modified.plugins[1].delivery.resourceSha256 = '0'.repeat(64);
+  assert.throws(
+    () => validateCatalog(modified, { rootDirectory }),
+    /resource SHA-256 mismatch/
   );
 });

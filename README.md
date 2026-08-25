@@ -24,9 +24,12 @@ itself a permission or bypass its packaged host.
 ## Current catalog
 
 [`registry/plugins.json`](registry/plugins.json) is the only production
-allowlist. The first entry represents the existing Report Generator remote-web
-system and delegates it to the packaged `generator-host`; the Generator's own
-manifest and clinical contract remain independently versioned.
+allowlist. `report-generators` represents the existing Report Generator
+remote-web system and delegates it to the packaged `generator-host`; the
+Generator's own manifest and clinical contract remain independently versioned.
+`online-options-help` is a declarative proof plugin delegated to the packaged
+`declarative-block-host`; its strict text-only notice can change online without
+an Extension release.
 
 Each catalog entry pins the exact SHA-256 of its local plugin manifest. The
 validator checks closed schemas, supported versions, identity, capability

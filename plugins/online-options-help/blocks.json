@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "pluginId": "online-options-help",
+  "version": "1.0.0",
+  "blocks": [
+    {
+      "id": "network-proof",
+      "type": "notice",
+      "title": "線上插件載入成功",
+      "body": "這個功能區塊不是隨 Extension 打包，而是由 public Registry 線上下載，通過 manifest、SHA-256、closed schema 與 packaged host 檢核後才顯示。",
+      "tone": "success"
+    }
+  ]
+}
