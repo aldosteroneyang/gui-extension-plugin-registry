@@ -11,13 +11,17 @@ const catalog = JSON.parse(fs.readFileSync(path.join(rootDirectory, 'registry/pl
 
 test('production catalog passes executable manifest and delivery checks', () => {
   const result = validateCatalog(catalog, { rootDirectory });
-  assert.equal(result.plugins.length, 3);
+  assert.equal(result.plugins.length, 5);
   assert.equal(result.plugins[0].id, 'report-generators');
   assert.equal(result.plugins[0].delivery.hostPluginId, 'generator-host');
   assert.equal(result.plugins[1].id, 'online-options-help');
   assert.equal(result.plugins[1].delivery.hostPluginId, 'declarative-block-host');
   assert.equal(result.plugins[2].id, 'worklist-sort-online');
   assert.equal(result.plugins[2].delivery.hostPluginId, 'feature-activation-host');
+  assert.equal(result.plugins[3].id, 'report-reminders-online');
+  assert.equal(result.plugins[3].delivery.hostPluginId, 'feature-activation-host');
+  assert.equal(result.plugins[4].id, 'report-library-online');
+  assert.equal(result.plugins[4].delivery.hostPluginId, 'feature-activation-host');
 });
 
 test('catalog rejects prose approval and packaged remote publication', () => {

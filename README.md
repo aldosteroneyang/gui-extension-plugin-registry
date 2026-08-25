@@ -30,11 +30,14 @@ Generator's own manifest and clinical contract remain independently versioned.
 `online-options-help` is a declarative proof plugin delegated to the packaged
 `declarative-block-host`; its strict text-only notice can change online without
 an Extension release.
-`worklist-sort-online` is the first activation controller for an existing
-business plugin. Its strict `activation.json` can only toggle the Extension-
-allowlisted packaged `worklist-sort` lifecycle through
-`feature-activation-host`; it cannot add a target, handler, capability,
-permission, storage namespace, or downloaded JavaScript.
+`worklist-sort-online`, `report-reminders-online`, and
+`report-library-online` are activation controllers for existing packaged
+business plugins. Their strict `activation.json` resources can only toggle an
+Extension-allowlisted lifecycle through `feature-activation-host`; they cannot
+add a target, handler, capability, permission, storage namespace, or downloaded
+JavaScript. The Reminder and Report Library controllers require Extension
+3.5.0 or newer, which shipped and passed production gates before these entries
+were published.
 
 Each catalog entry pins the exact SHA-256 of its local plugin manifest. The
 validator checks closed schemas, supported versions, identity, capability

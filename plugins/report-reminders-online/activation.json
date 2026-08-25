@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "pluginId": "report-reminders-online",
+  "version": "1.0.0",
+  "targetPluginId": "report-reminders",
+  "enabled": true
+}

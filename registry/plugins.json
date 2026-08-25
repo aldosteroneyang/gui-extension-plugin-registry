@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "contractVersion": 1,
-  "registryVersion": "1.2.0",
+  "registryVersion": "1.3.0",
   "plugins": [
     {
       "id": "report-generators",
@@ -39,6 +39,32 @@
         "hostPluginId": "feature-activation-host",
         "resourceUrl": "https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/plugins/worklist-sort-online/activation.json",
         "resourceSha256": "eba026855cb9d7c1a12766ecd396623898107bd9ec8a9ff5ddb5256f2f7b6b99"
+      }
+    },
+    {
+      "id": "report-reminders-online",
+      "version": "1.0.0",
+      "kind": "declarative",
+      "manifestPath": "plugins/report-reminders-online/plugin-manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/plugins/report-reminders-online/plugin-manifest.json",
+      "manifestSha256": "ee494fa21c8ffb7ae48b61c5cdb8ab170b0846a6e2a2a89b5ac62123d75b298f",
+      "delivery": {
+        "hostPluginId": "feature-activation-host",
+        "resourceUrl": "https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/plugins/report-reminders-online/activation.json",
+        "resourceSha256": "1a73bb4b7f5586850357730cfc355827efa501ce22a2b419b9830d63c4cfbf2d"
+      }
+    },
+    {
+      "id": "report-library-online",
+      "version": "1.0.0",
+      "kind": "declarative",
+      "manifestPath": "plugins/report-library-online/plugin-manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/plugins/report-library-online/plugin-manifest.json",
+      "manifestSha256": "e0e0aadb12356cf4046e5014212dbe707f951e996459cc1e4293f06be35edb79",
+      "delivery": {
+        "hostPluginId": "feature-activation-host",
+        "resourceUrl": "https://raw.githubusercontent.com/aldosteroneyang/gui-extension-plugin-registry/main/plugins/report-library-online/activation.json",
+        "resourceSha256": "5ce1606483bf6230a639d59fe3de3fa9603b7724d08a0b7cecbc9be0347c9c01"
       }
     }
   ]
